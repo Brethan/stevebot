@@ -22,4 +22,9 @@ module.exports = class Client extends discord.Client {
         const data = JSON.stringify(this.config, null, 4);
         writeFileSync("./config.json", data);
     }
+
+    externalOverrideConfig(config) {
+        this.config = config;
+        this.overwriteConfig();
+    }
 }
