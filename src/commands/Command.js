@@ -1,7 +1,7 @@
 const Client = require("../Client");
 
 
-class Command {
+module.exports = class Command {
 
     /**
      * 
