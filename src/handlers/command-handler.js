@@ -1,3 +1,5 @@
+//@ts-check
+
 const { readdirSync } = require("fs");
 const { join, resolve } = require("path");
 const Command = require("../commands/Command.js");
@@ -7,15 +9,15 @@ const Client = require("../Client");
  * 
  * @param {Client} client 
  */
-module.exports = (client, discord) => {
+module.exports = (client) => {
 
     /**
      * 
      * @param {Command} command 
-     * @param {Client} client 
+     * @param {string} file 
      * @returns {boolean}
      */
-    const checkValidCommand = (command, file) => {
+    const checkValidCommand = (command, file,) => {
 
         if (!command.name) {
             console.log(`ERROR: Command with file name "${file}" does not have a command name`)
@@ -46,7 +48,7 @@ module.exports = (client, discord) => {
                  * @type {Command}
                  */
                 const command = new SubCommand(client);
-                console.log(`INFO: Loading Command ${command.name}`)
+                console.log(`INFO: Loading Command ${command.name ? command.name : "- name not found -"}`)
 
                 if (checkValidCommand(command, file)) {
                     client.commands.set(command.name, command);
@@ -65,8 +67,18 @@ module.exports = (client, discord) => {
 
             }
         })
-        console.log(client.commands);
+        //console.log(client.commands);
     }
 
     loadCommands("../commands")
+
+    client.on("messageCreate", message => {
+        if (!message || !message.content) return;
+        if (!message.content.toLowerCase().startsWith(client.config.prefix)) return;
+
+        const args = message.content.toLowerCase().slice(client.config.prefix.length).trim().split(/ +/);
+        const commandName = args.shift();
+        
+
+    })
 }
