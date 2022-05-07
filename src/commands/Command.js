@@ -1,3 +1,5 @@
+//@ts-check
+
 const Client = require("../Client");
 
 
@@ -53,7 +55,7 @@ module.exports = class Command {
         this.expectedArgs = options.expectedArgs;
 
         /**  @type {string[]} A string containing examples on how to use the command */
-        this.usage = [options.usage || `${client.prefix}.${this.name}`];
+        this.usage = [...options.usage || `${client.prefix}.${this.name}`];
 
         /** 
          * @type {boolean} Whether or not this command requires a user to be a moderator 
@@ -78,5 +80,13 @@ module.exports = class Command {
          * Note: Command state "toggle" commands should never be disabled.
          */
         this.enabled = options.enabled || true;
+    }
+
+    /**
+     * 
+     * @param {string} args 
+     */
+    validateCommand(args) {
+
     }
 }
