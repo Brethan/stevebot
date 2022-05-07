@@ -1,10 +1,12 @@
+//@ts-check
 const Client = require("./src/Client.js");
-const {Intents} = require("discord.js");
+const { Intents } = require("discord.js");
 require("dotenv").config();
 
-const intents = [];
+let intents = 0;
+
 for (const intent in Intents.FLAGS) {
-    intents.push(intent);
+    intents |= Intents.FLAGS[intent];
 }
 
 const client = new Client(intents);
