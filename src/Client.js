@@ -1,38 +1,42 @@
+//@ts-check
+
 const { writeFileSync, readdir, readdirSync } = require("fs");
-const discord = require("discord.js");
+const { Client, Collection } = require("discord.js");
 const { join } = require("path");
 const Command = require("./commands/Command");
-const Event = require("./events/Event");
 
-module.exports = class Client extends discord.Client {
+module.exports = class SteveClient extends Client {
 
+    /**
+     * @param {number} intents 
+     */
     constructor(intents) {
         super({ intents: intents });
 
         this.config = require("../config.json");
 
         /**
-         * @type {discord.Collection<string, Command>}
+         * @type {Collection<string, Command>}
          */
-        this.commands = new discord.Collection()
+        this.commands = new Collection()
 
         /**
-         * @type {discord.Collection<string, Command>}
+         * @type {Collection<string, Command>}
          */
-        this.aliases = new discord.Collection();
+        this.aliases = new Collection();
 
         /**
-         * @type {discord.Collection<string, Event>}
+         * @type {Collection<string, Event>}
          */
-        this.events = new discord.Collection();
-        
+        this.events = new Collection();
+
         this.initHandlers();
     }
 
     initHandlers() {
         readdirSync(join(__dirname, "handlers"))
             .filter(file => file.endsWith("handler.js"))
-            .forEach(handler => require("./handlers/" + handler)(this, discord));
+            .forEach(handler => require("./handlers/" + handler)(this));
     }
 
     get prefix() {
