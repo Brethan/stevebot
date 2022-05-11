@@ -1,5 +1,6 @@
 //@ts-check
 
+const { Message } = require("discord.js");
 const Client = require("../Client");
 
 
@@ -51,7 +52,7 @@ module.exports = class Command {
          */
         this.minArgs = options.minArgs || 0;
 
-        /** @type {string[]} A list of the expected primary and / or secondary arguments  */
+        /** @type {string[]} A list of the expected primary arguments  */
         this.expectedArgs = options.expectedArgs;
 
         /**  @type {string[]} A string containing examples on how to use the command */
@@ -84,9 +85,24 @@ module.exports = class Command {
 
     /**
      * 
-     * @param {string} args 
+     * @param {Message} message
+     * @param {string[]} args
+     * @returns {string[]}
      */
-    validateCommand(args) {
+    validateCommandInvocation(message, args) {
+        const reasons = [];
+        if (this.args && (args.length == 0))
+            reasons.push("");
 
+        if (args.length) {
+            if (this.expectedArgs && !this.expectedArgs.includes(args[0]))
+                reasons.push("");
+
+            if (args.length < this.minArgs) 
+                reasons.push("");
+        }
+
+        
+        return reasons;
     }
 }
