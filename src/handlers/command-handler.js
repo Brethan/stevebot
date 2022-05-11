@@ -79,6 +79,11 @@ module.exports = (client) => {
         const args = message.content.toLowerCase().slice(client.config.prefix.length).trim().split(/ +/);
         const commandName = args.shift();
         
+        const { commands, aliases } = client;
+        const command = commands.get(commandName) || aliases.get(commandName);
 
+        if (!command) return;
+
+        
     })
 }
