@@ -6,6 +6,7 @@ module.exports = class Role extends Command {
         super(client, {
             "name": "role",
             "description": "grants or removes roles from a user",
+            "alias": "r",
             "args": true,
             "minArgs": 2,
             "expectedArgs": ["add", "remove"],
