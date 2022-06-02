@@ -1,7 +1,7 @@
 //@ts-check
 
 const { writeFileSync, readdir, readdirSync } = require("fs");
-const { Client, Collection } = require("discord.js");
+const { Client, Collection, Message } = require("discord.js");
 const { join } = require("path");
 const Command = require("./commands/Command");
 
@@ -29,6 +29,16 @@ module.exports = class SteveClient extends Client {
          * @type {Collection<string, Event>}
          */
         this.events = new Collection();
+
+        /** 
+         * @type {Collection<string, Message[]>} 
+         */
+        this.edits = new Collection();
+
+        /**
+         * @type {Collection<string, Message>}
+         */
+        this.deletes = new Collection();
 
         this.initHandlers();
     }
