@@ -4,6 +4,7 @@ const { readdirSync } = require("fs");
 const { join, resolve } = require("path");
 const Command = require("../commands/Command.js");
 const Client = require("../Client");
+const { Message, MessageEmbed } = require("discord.js");
 
 /**
  * 
@@ -72,18 +73,57 @@ module.exports = (client) => {
 
     loadCommands("../commands")
 
-    client.on("messageCreate", message => {
+    /**
+     *      
+     * @param {Message} message 
+     * @param {number} sleep 
+     * @returns 
+     */
+    const msgDelete = (message, sleep) => setTimeout(() => message.delete(), sleep)
+    client.on("messageCreate", async message => {
         if (!message || !message.content) return;
         if (!message.content.toLowerCase().startsWith(client.config.prefix)) return;
-
-        const args = message.content.toLowerCase().slice(client.config.prefix.length).trim().split(/ +/);
+        const args = message.content.slice(client.config.prefix.length).trim().split(/ +/);
         const commandName = args.shift();
+        if (!commandName) return;
         
         const { commands, aliases } = client;
         const command = commands.get(commandName) || aliases.get(commandName);
 
         if (!command) return;
 
-        
+        const invalid = command.validateCommandInvocation(message, args);
+        if (invalid != null) {
+            msgDelete(await message.channel.send({ content: invalid }), 10_000);
+            msgDelete(message, 2_000);
+            return;
+        }
+
+        // Invoke 
+        if (args[0] === "help") {
+            // If the command doesn't have a dedicated help function, use default
+            if (!command["help"]) {
+                const help = client.commands.get("help");
+                //@ts-ignore
+                help.help(message, commandName);
+            } else {
+                command["help"](message);
+            }
+
+            return;
+        }
+
+        const result = await command.execute(message, args);
+        if (typeof result === "string") {
+            message.channel.send({ content: result });
+        } else if (result instanceof MessageEmbed) {
+            message.channel.send({ embeds: [result] })
+        } else {
+            message.channel.send("I have no idea what kind of behaviour this represents yet")
+        }
+
+
+
+
     })
 }
