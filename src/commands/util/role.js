@@ -16,8 +16,17 @@ module.exports = class Role extends Command {
     /**
      * @param {discord.Message} message
      * @param {string[]} args
+     * @override
      */
-    execute(message, args) {
+    async execute(message, args) {
+    }
+
+    validateSecondaryArguments(args) {
+        return [];
+    }
+
+    help(message) {
+        message.channel.send("this is just a test to see if this'll work")
     }
 
 }
