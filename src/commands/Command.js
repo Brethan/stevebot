@@ -1,6 +1,6 @@
 //@ts-check
 
-const { Message } = require("discord.js");
+const { Message, MessageEmbed } = require("discord.js");
 const Client = require("../Client");
 
 
@@ -29,9 +29,9 @@ module.exports = class Command {
         this.name = options.name;
 
         /** @type {string} Describes what the command does / is used for */
-        this.description = options.description;
+        this.description = options.description || this.name;
 
-        /** @type {string} A shortened name for this command*/
+        /** @type {?string} A shortened name for this command*/
         this.alias = options.alias;
 
         /** 
@@ -52,7 +52,7 @@ module.exports = class Command {
          */
         this.minArgs = options.minArgs || 0;
 
-        /** @type {string[]} A list of the expected primary arguments  */
+        /** @type {?string[]} A list of the expected primary arguments  */
         this.expectedArgs = options.expectedArgs;
 
         /**  @type {string[]} A string containing examples on how to use the command */
@@ -85,24 +85,59 @@ module.exports = class Command {
 
     /**
      * 
+     * @param {Message} message 
+     * @param {string[]} args 
+     * @abstract
+     * @returns {Promise<String | MessageEmbed>} 
+     */
+    async execute(message, args) {
+        
+        throw new Error("This command has not been implemented yet because steve is lazy.");
+    }
+
+    /**
      * @param {Message} message
      * @param {string[]} args
-     * @returns {string[]}
+     * @returns {?string}
      */
     validateCommandInvocation(message, args) {
-        const reasons = [];
-        if (this.args && (args.length == 0))
-            reasons.push("");
-
-        if (args.length) {
-            if (this.expectedArgs && !this.expectedArgs.includes(args[0]))
-                reasons.push("");
-
-            if (args.length < this.minArgs) 
-                reasons.push("");
+        if (args[0] === "help") 
+            return null;
+        
+        if (!args.length && this.args) {
+            return "You didn't provide any arguments!";
+        } else if (args.length) {
+            if (this.expectedArgs && !this.expectedArgs.includes(args[0])) {
+                const secondary = this.validateSecondaryArguments(args);
+                return `Unexpected arguments:  ${args[0]}${secondary.length ? ', ' + secondary.join(", ") : ""}`;
+            }
+            if (args.length < this.minArgs)
+                return "You didn't provide enough arguments!";
+        }
+        /** @type {string[]} */
+        const noPerms = [];
+        const { member } = message;
+        for (const perm of this.permissions) {
+            //@ts-ignore
+            if (!(member.permissions.has(perm) || member.permissionsIn(message.channel.id).has(perm))) {
+                noPerms.push(perm)
+            }
         }
 
-        
-        return reasons;
+        if (noPerms.length) {
+            return "You do not have permission to use this command.\nMissing permissions: " + noPerms.join(", ");
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param {string[]} args 
+     * @returns {string[]}
+     * @abstract
+     */
+    validateSecondaryArguments(args) {
+        throw new Error(this.name + " secondary argument validation has not been implemented")
     }
 }
