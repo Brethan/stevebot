@@ -1,14 +1,15 @@
 //@ts-check
 
-const { Message, MessageEmbed } = require("discord.js");
-const Client = require("../Client");
+const { Message, MessageEmbed, GuildMember } = require("discord.js");
+const SteveClient = require("../Client");
+const { stringify } = JSON;
 
 
 module.exports = class Command {
 
     /**
      * 
-     * @param {Client} client 
+     * @param {SteveClient} client 
      * @param {Object} options
      * @param {string} options.name
      * @param {?string} options.description
@@ -22,8 +23,11 @@ module.exports = class Command {
      * @param {?boolean} options.admin
      * @param {?boolean} options.owner
      * @param {?boolean} options.enabled
+     * @param {?number} options.autoclear
      */
     constructor(client, options) {
+
+        this.client = client;
 
         /** @type {string} Name of the command */
         this.name = options.name;
@@ -52,8 +56,8 @@ module.exports = class Command {
          */
         this.minArgs = options.minArgs || 0;
 
-        /** @type {?string[]} A list of the expected primary arguments  */
-        this.expectedArgs = options.expectedArgs;
+        /** @type {string[]} A list of the expected primary arguments. */
+        this.expectedArgs = (options.expectedArgs || []).concat("help");
 
         /**  @type {string[]} A string containing examples on how to use the command */
         this.usage = [...options.usage || `${client.prefix}.${this.name}`];
@@ -81,6 +85,14 @@ module.exports = class Command {
          * Note: Command state "toggle" commands should never be disabled.
          */
         this.enabled = options.enabled || true;
+
+        /** 
+         * @type {number} The amount of time in milliseconds before the command 
+         * response is deleted automatically.
+         * 
+         * If left unset or set to 0, the command response will not be deleted 
+         */
+        this.autoclear = options.autoclear || 0;
     }
 
     /**
@@ -91,44 +103,45 @@ module.exports = class Command {
      * @returns {Promise<String | MessageEmbed>} 
      */
     async execute(message, args) {
-        
         throw new Error("This command has not been implemented yet because steve is lazy.");
     }
 
     /**
-     * @param {Message} message
      * @param {string[]} args
-     * @returns {?string}
+     * @returns {string}
      */
-    validateCommandInvocation(message, args) {
-        if (args[0] === "help") 
-            return null;
-        
-        if (!args.length && this.args) {
+    validateCommandInvocation(args) {
+
+        // Args are required and none are provided
+        if (this.args && !args.length) 
             return "You didn't provide any arguments!";
-        } else if (args.length) {
-            if (this.expectedArgs && !this.expectedArgs.includes(args[0])) {
-                const secondary = this.validateSecondaryArguments(args);
-                return `Unexpected arguments:  ${args[0]}${secondary.length ? ', ' + secondary.join(", ") : ""}`;
-            }
-            if (args.length < this.minArgs)
-                return "You didn't provide enough arguments!";
-        }
+
+        // Minimum # of args are required and N < minArgs, N = args provided
+        else if (this.minArgs > args.length)
+            return "You didn't provide enough arguments!";
+            
+        // Expected args are required and one is not provided
+        else if (this.args && !this.expectedArgs.includes(args[0]))
+            return "Unexpected argument: " + args[0];
+
+        return "";            
+    }
+    /**
+     * 
+     * @param {GuildMember} member 
+     * @param {string} channelId
+     */
+    checkPermissions(member, channelId) {
         /** @type {string[]} */
-        const noPerms = [];
-        const { member } = message;
+        const missingPermissions = [];
         for (const perm of this.permissions) {
             //@ts-ignore
-            if (!(member.permissions.has(perm) || member.permissionsIn(message.channel.id).has(perm))) {
-                noPerms.push(perm)
+            if (!(member.permissions.has(perm) || member.permissionsIn(channelId).has(perm))) {
+                missingPermissions.push(perm);
             }
         }
 
-        if (noPerms.length) {
-            return "You do not have permission to use this command.\nMissing permissions: " + noPerms.join(", ");
-        }
-
-        return null;
+        return missingPermissions;
     }
 
     /**
@@ -137,7 +150,8 @@ module.exports = class Command {
      * @returns {string[]}
      * @abstract
      */
-    validateSecondaryArguments(args) {
-        throw new Error(this.name + " secondary argument validation has not been implemented")
+    checkVariableArguments(args) {
+        throw new Error(this.name + " variable argument checking has not been implemented")
     }
+
 }
