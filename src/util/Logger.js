@@ -34,7 +34,7 @@ module.exports = class Logger {
             events = [events]
         }
 
-        
+
     }
 
     /**
@@ -46,6 +46,6 @@ module.exports = class Logger {
             people = [people];
         }
 
-        
+
     }
 }

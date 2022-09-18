@@ -16,7 +16,7 @@ module.exports = (client) => {
     const loadEvents = (dir) => {
         const event_basePath = resolve("./src", "events", dir);
         const eventFiles = readdirSync(event_basePath).filter(file => file.endsWith(".js"));
-        
+
         for (const eventSrc of eventFiles) {
 
             const Event = require(resolve(event_basePath, eventSrc));
@@ -24,7 +24,7 @@ module.exports = (client) => {
             const event = new Event();
             const eventName = event.name;
             client[event.once](eventName, event[eventName].bind(null, client));
-            
+
         }
     }
 

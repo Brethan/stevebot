@@ -3,7 +3,7 @@
 const SteveClient = require("../../Client");
 const Event = require("../Event");
 
-module.exports = class Ready extends Event { 
+module.exports = class Ready extends Event {
     constructor() {
         super({ name: "ready", once: "once", enabled: true })
     }

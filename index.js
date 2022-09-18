@@ -9,6 +9,6 @@ for (const intent in Intents.FLAGS) {
     intents |= Intents.FLAGS[intent];
 }
 
-const client = new SteveClient({intents});
+const client = new SteveClient({ intents });
 
 client.login(process.env.TOKEN);

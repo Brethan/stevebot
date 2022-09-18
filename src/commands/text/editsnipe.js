@@ -1,7 +1,7 @@
 const Command = require('../Command.js');
 const discord = require('discord.js');
 
-module.exports = class  extends Command {
+module.exports = class extends Command {
     constructor(client) {
         super(client, {
             "name": "editsnipe",
@@ -10,7 +10,7 @@ module.exports = class  extends Command {
             "permissions": ["PERMISSIONS"],
             "args": true,
             "minArgs": 1,
-            "expectedArgs": ["args", ],
+            "expectedArgs": ["args",],
             "usage": ['s. '],
             "ownerCommand": false,
             "disabled": false,
@@ -23,7 +23,5 @@ module.exports = class  extends Command {
     execute(message, args) {
 
     }
-
-    
 
 }

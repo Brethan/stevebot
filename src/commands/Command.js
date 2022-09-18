@@ -113,18 +113,18 @@ module.exports = class Command {
     validateCommandInvocation(args) {
 
         // Args are required and none are provided
-        if (this.args && !args.length) 
+        if (this.args && !args.length)
             return "You didn't provide any arguments!";
 
         // Minimum # of args are required and N < minArgs, N = args provided
         else if (this.minArgs > args.length)
             return "You didn't provide enough arguments!";
-            
+
         // Expected args are required and one is not provided
         else if (this.args && !this.expectedArgs.includes(args[0]))
             return "Unexpected argument: " + args[0];
 
-        return "";            
+        return "";
     }
     /**
      * 

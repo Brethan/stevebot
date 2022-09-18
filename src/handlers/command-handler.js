@@ -1,6 +1,6 @@
 //@ts-check
 
-const { Message, MessageEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const SteveClient = require("../Client");
 const Help = require("../commands/util/help");
 const command_loader = require("../util/command-loader.js");
@@ -20,19 +20,19 @@ module.exports = (client) => {
         const args = message.content.slice(client.config.prefix.length).trim().split(/ +/);
         const commandName = args.shift();
         if (!commandName) return;
-        
+
         const { commands, aliases } = client;
         const { member, channel } = message;
 
         const command = commands.get(commandName) || aliases.get(commandName);
-        
+
         if (!command) {
             // Delete message from channel
             await message.react("❔")
             client.deleteMessage(message, 6_000);
             return;
         }
-        
+
         if (!member) {
             // Send message to channel
             const reply = "Something unexpected happened (Discord error?). Try sending that again!";
@@ -53,7 +53,7 @@ module.exports = (client) => {
         const missingPermissions = command.checkPermissions(member, channel.id);
         if (missingPermissions.length > 0) {
             // Send message to channel
-            client.deleteMessage(await channel.send({ content: missingPermissions.join(", ")}), 6_000);
+            client.deleteMessage(await channel.send({ content: missingPermissions.join(", ") }), 6_000);
             return;
         }
 
@@ -68,17 +68,17 @@ module.exports = (client) => {
                 // If the command doesn't have a dedicated help function, use default
                 if (!command[args[0]]) {
                     const help = client.commands.get(args[0]);
-                    result = (help instanceof Help) ?  help.defaultHelp(message, commandName) : "Something went wrong!";
-                } else 
+                    result = (help instanceof Help) ? help.defaultHelp(message, commandName) : "Something went wrong!";
+                } else
                     result = await command[args[0]](message);
 
-            // Otherwise invoke the execute method
+                // Otherwise invoke the execute method
             } else {
                 result = await command.execute(message, args)
             }
 
 
-            const response = await message.channel.send(typeof result === "string" ? {content: result} : {embeds: [result]})
+            const response = await message.channel.send(typeof result === "string" ? { content: result } : { embeds: [result] })
             if (command.autoclear > 0) {
                 await client.deleteMessage(response, command.autoclear);
             }
