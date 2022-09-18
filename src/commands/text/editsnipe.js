@@ -4,8 +4,8 @@ const discord = require('discord.js');
 module.exports = class  extends Command {
     constructor(client) {
         super(client, {
-            "name": "",
-            "alias": "",
+            "name": "editsnipe",
+            "alias": "es",
             "description": "",
             "permissions": ["PERMISSIONS"],
             "args": true,
@@ -23,5 +23,7 @@ module.exports = class  extends Command {
     execute(message, args) {
 
     }
+
+    
 
 }
