@@ -8,10 +8,10 @@ const Command = require("./commands/Command");
 module.exports = class SteveClient extends Client {
 
     /**
-     * @param {number} intents 
+     * @param {import("discord.js").ClientOptions} options 
      */
-    constructor(intents) {
-        super({ intents: intents });
+    constructor(options) {
+        super(options);
 
         this.config = require("../config.json");
 
