@@ -1,12 +1,23 @@
-const Client = require("../../Client");
+//@ts-check
 const { Message } = require("discord.js");
+const SteveClient = require("../../Client");
+const Event = require("../Event.js");
 
-/**
- * 
- * @param {Client} client 
- * @param {Message} message 
- */
 
-module.exports = async (client, message) => {
+module.exports = class MessageCreate extends Event {
+    constructor() {
+        super({
+            name: "messageCreate",
+            once: "on",
+            enabled: true
+        })
+    }
 
+    /**
+     * @param {SteveClient} client
+     * @param {Message} message 
+     */
+    async messageCreate(client, message) {
+        console.log(message?.content);
+    }
 }
