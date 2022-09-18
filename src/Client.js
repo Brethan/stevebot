@@ -57,6 +57,26 @@ module.exports = class SteveClient extends Client {
         this.config.prefix = change;
     }
 
+    /**
+     * @param {number} delay
+     */
+    async sleep(delay) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    /**
+     * @param {Message} message
+     * @param {number | undefined} delay
+     */
+    async deleteMessage(message, delay = 5_000) {
+        await this.sleep(delay);
+        try {
+            await message.delete();
+        } catch (error) {
+            console.log("ERROR: Could not delete a message. It may have been deleted by someone...");
+        }
+    }
+
     overwriteConfig() {
         const data = JSON.stringify(this.config, null, 4);
         writeFileSync("./config.json", data);
