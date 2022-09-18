@@ -21,7 +21,7 @@ module.exports = class Role extends Command {
     async execute(message, args) {
     }
 
-    validateSecondaryArguments(args) {
+    checkVariableArguments(args) {
         return [];
     }
 
