@@ -1,85 +1,24 @@
 //@ts-check
 
-const { readdirSync } = require("fs");
-const { join, resolve } = require("path");
-const Command = require("../commands/Command.js");
-const Client = require("../Client");
 const { Message, MessageEmbed } = require("discord.js");
+const SteveClient = require("../Client");
+const command_loader = require("../util/command-loader.js");
+
 
 /**
  * 
- * @param {Client} client 
+ * @param {SteveClient} client 
  */
 module.exports = (client) => {
 
-    /**
-     * 
-     * @param {Command} command 
-     * @param {string} file 
-     * @returns {boolean}
-     */
-    const checkValidCommand = (command, file,) => {
-
-        if (!command.name) {
-            console.log(`ERROR: Command with file name "${file}" does not have a command name`)
-            return false;
-        }
-
-        if (!command.enabled) {
-            console.log(`WARNING: Command "${command.name}" is disabled.`)
-            return false;
-        }
-
-        if (client.commands.has(command.name)) {
-            console.log(`ERROR: There is already a command with name ${command.name}`);
-            return false;
-        }
-
-        return true;
-
-    }
-    const loadCommands = (dir) => {
-        const cmdFolders = readdirSync(join(__dirname, dir)).filter(file => !file.endsWith(".js"));
-        cmdFolders.forEach(folder => {
-
-            const commandFiles = readdirSync(resolve(__dirname, dir, folder)).filter(file => file.endsWith(".js"));
-            for (const file of commandFiles) {
-                const SubCommand = require(resolve(__dirname, dir, folder, file));
-                /**
-                 * @type {Command}
-                 */
-                const command = new SubCommand(client);
-                console.log(`INFO: Loading Command ${command.name ? command.name : "- name not found -"}`)
-
-                if (checkValidCommand(command, file)) {
-                    client.commands.set(command.name, command);
-
-                    if (command.alias) {
-                        if (client.aliases.has(command.alias)) {
-                            console.log(`WARNING: There is already a command with alias ${command.alias}`)
-                        } else {
-                            client.aliases.set(command.alias, command);
-                        }
-                    }
-
-                    console.log(`INFO: Command ${command.name} successfully added to the command collection`);
-                } else
-                    console.log(`ERROR: Command ${command.name} not added to the command collection.`)
-
-            }
-        })
-        //console.log(client.commands);
-    }
-
-    loadCommands("../commands")
+    command_loader("../commands", client);
 
     /**
      *      
-     * @param {Message} message 
-     * @param {number} sleep 
+     * @param {Message} message
      * @returns 
      */
-    const msgDelete = (message, sleep) => setTimeout(() => message.delete(), sleep)
+    const msgDelete = (message) => setTimeout(() => message.delete(),6000)
     client.on("messageCreate", async message => {
         if (!message || !message.content) return;
         if (!message.content.toLowerCase().startsWith(client.config.prefix)) return;
@@ -88,42 +27,64 @@ module.exports = (client) => {
         if (!commandName) return;
         
         const { commands, aliases } = client;
+        const { member, channel } = message;
+
         const command = commands.get(commandName) || aliases.get(commandName);
-
-        if (!command) return;
-
-        const invalid = command.validateCommandInvocation(message, args);
-        if (invalid != null) {
-            msgDelete(await message.channel.send({ content: invalid }), 10_000);
-            msgDelete(message, 2_000);
+        
+        if (!command) {
+            // Delete message from channel
+            message.react("❔").then(() => msgDelete(message));
+            return;
+        }
+        
+        if (!member) {
+            // Send message to channel
+            const reply = "Something unexpected happened (Discord error?). Try sending that again!";
+            msgDelete(await message.reply(reply));
             return;
         }
 
-        // Invoke 
-        if (args[0] === "help") {
-            // If the command doesn't have a dedicated help function, use default
-            if (!command["help"]) {
-                const help = client.commands.get("help");
-                //@ts-ignore
-                help.help(message, commandName);
+        console.log("DEBUG: 1")
+        const invalidReason = command.validateCommandInvocation(args);
+        if (invalidReason.length) {
+            //@ts-ignore
+            msgDelete(await channel.send({ content: invalidReason }));
+            return;
+        }
+
+        console.log("DEBUG: 2")
+
+        const missingPermissions = command.checkPermissions(member, channel.id);
+        if (missingPermissions.length > 0) {
+            // Send message to channel
+            msgDelete(await channel.send({ content: missingPermissions.join(", ")}))
+            return;
+        }
+
+
+        console.log("DEBUG: 3")
+
+        try {
+            // Invoke 
+            if (args[0] === "help") {
+                // If the command doesn't have a dedicated help function, use default
+                if (!command["help"]) {
+                    const help = client.commands.get("help");
+                    //@ts-ignore
+                    help.defaultHelp(message, commandName);
+
+                } else {
+                    command["help"](message);
+                }
+
             } else {
-                command["help"](message);
+
+                const result = await command.execute(message, args)
+                
             }
-
-            return;
+        } catch (error) {
+            console.log("This error has been thrown")
         }
-
-        const result = await command.execute(message, args);
-        if (typeof result === "string") {
-            message.channel.send({ content: result });
-        } else if (result instanceof MessageEmbed) {
-            message.channel.send({ embeds: [result] })
-        } else {
-            message.channel.send("I have no idea what kind of behaviour this represents yet")
-        }
-
-
-
 
     })
 }
