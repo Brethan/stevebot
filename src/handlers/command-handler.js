@@ -43,7 +43,7 @@ module.exports = (client) => {
         const invalidReason = command.validateCommandInvocation(args);
         if (invalidReason.length) {
             //@ts-ignore
-            msgDelete(await channel.send({ content: invalidReason }));
+            client.deleteMessage(await channel.send({ content: invalidReason }));
             return;
         }
 

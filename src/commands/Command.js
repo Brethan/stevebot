@@ -2,7 +2,6 @@
 
 const { Message, MessageEmbed, GuildMember } = require("discord.js");
 const SteveClient = require("../Client");
-const { stringify } = JSON;
 
 
 module.exports = class Command {
