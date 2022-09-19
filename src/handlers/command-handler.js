@@ -40,7 +40,6 @@ module.exports = (client) => {
             return;
         }
 
-        console.log("DEBUG: 1")
         const invalidReason = command.validateCommandInvocation(args);
         if (invalidReason.length) {
             //@ts-ignore
@@ -48,17 +47,12 @@ module.exports = (client) => {
             return;
         }
 
-        console.log("DEBUG: 2")
-
         const missingPermissions = command.checkPermissions(member, channel.id);
         if (missingPermissions.length > 0) {
             // Send message to channel
             client.deleteMessage(await channel.send({ content: missingPermissions.join(", ") }), 6_000);
             return;
         }
-
-
-        console.log("DEBUG: 3")
 
         try {
             /** @type {string | MessageEmbed} */

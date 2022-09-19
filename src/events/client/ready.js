@@ -12,7 +12,7 @@ module.exports = class Ready extends Event {
      * @param {SteveClient} client 
      */
     async ready(client) {
-        console.log(client.user?.tag, "is ready and waiting");
+        console.log("NOTICE:", client.user?.tag, "is ready and waiting");
         client.user?.setActivity({
             name: "stevebotV5 in development :o",
             type: "WATCHING"
