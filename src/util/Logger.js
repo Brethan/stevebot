@@ -1,11 +1,13 @@
-const Client = require("../Client");
+const SteveClient = require("../Client");
 
 module.exports = class Logger {
     /**
      * 
-     * @param {Client} client 
+     * @param {SteveClient} client 
      */
     constructor(client) {
+        /** @type {SteveClient} */
+        this.client = client;
         this.logSettings = client.config.log_settings;
     }
 
@@ -13,39 +15,50 @@ module.exports = class Logger {
         return this.logSettings.events;
     }
 
-    get people() {
-        return this.logSettings.people;
+    get members() {
+        return this.logSettings.members;
+    }
+    
+    get loggingChannel() {
+        return this.logSettings.channel;
     }
 
-    get eventLoggingChannel() {
-        return this.logSettings.log_channels.events;
+    set events(events) {
+        this.logSettings.events = events;
+        this.client.overwriteConfig();
     }
 
-    get peopleLoggingChannel() {
-        return this.logSettings.log_channels.people;
+    set members(members) {
+        this.logSettings.members = members;
+        this.client.overwriteConfig();
+    }
+
+    set loggingChannel(channel) {
+        this.logSettings.channel = this.client.resolveIdFromMention(channel);
+        this.client.overwriteConfig();
     }
 
     /**
      * 
-     * @param {string|string[]} events 
+     * @param {string | string[]} members 
      */
-    addEvents(events) {
-        if (!(events instanceof Array)) {
-            events = [events]
+    addMembersToLog(members) {
+        if (typeof members === "string") {
+            members = [members];
         }
-
-
+        
+        this.members = Array.from(new Set([...this.members].concat(members)));
     }
 
     /**
      * 
-     * @param {string|string[]} people 
+     * @param {string | string[]} members 
      */
-    addPeople(people) {
-        if (!(people instanceof Array)) {
-            people = [people];
+    removeMembersFromLog(members) {
+        if (typeof members === "string") {
+            members = [members];
         }
 
-
+        this.members = this.members.filter(id => !members.includes(id));
     }
 }

@@ -4,6 +4,7 @@ const { writeFileSync, readdir, readdirSync } = require("fs");
 const { Client, Collection, Message } = require("discord.js");
 const { join } = require("path");
 const Command = require("./commands/Command");
+const Logger = require("./util/Logger");
 
 module.exports = class SteveClient extends Client {
 
@@ -40,6 +41,8 @@ module.exports = class SteveClient extends Client {
          */
         this.deletes = new Collection();
 
+        /** @type {Logger} */
+        this.logger = new Logger(this);
         this.initHandlers();
     }
 
@@ -78,6 +81,7 @@ module.exports = class SteveClient extends Client {
     }
 
     overwriteConfig() {
+        console.log("INFO: Overwriting the config json");
         const data = JSON.stringify(this.config, null, 4);
         writeFileSync("./config.json", data);
     }
@@ -85,5 +89,13 @@ module.exports = class SteveClient extends Client {
     externalOverrideConfig(config) {
         this.config = config;
         this.overwriteConfig();
+    }
+
+    /**
+     * 
+     * @param {string} mention 
+     */
+    resolveIdFromMention(mention) {
+        return mention.replace(/\\|\/|:|\*|\?|"|<|>|\||@|!/g, "");
     }
 }
