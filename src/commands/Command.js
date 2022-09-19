@@ -14,7 +14,7 @@ module.exports = class Command {
      * @param {string} options.name
      * @param {?string} options.description
      * @param {?string} options.alias
-     * @param {?string[]} options.permissions
+     * @param {?import("discord.js").PermissionString[]} options.permissions
      * @param {?boolean} options.args
      * @param {number} options.minArgs
      * @param {?string[]} options.expectedArgs
