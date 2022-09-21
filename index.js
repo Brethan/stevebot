@@ -1,14 +1,27 @@
 //@ts-check
 const SteveClient = require("./src/Client.js");
-const { Intents } = require("discord.js");
+const { GatewayIntentBits } = require("discord.js");
 require("dotenv").config();
 
-let intents = 0;
 
-for (const intent in Intents.FLAGS) {
-    intents |= Intents.FLAGS[intent];
-}
-
-const client = new SteveClient({ intents });
+const client = new SteveClient({ "intents": [
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.DirectMessageTyping,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildIntegrations,
+    GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildScheduledEvents,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildWebhooks,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent
+] });
 
 client.login(process.env.TOKEN);
