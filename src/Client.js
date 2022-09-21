@@ -43,6 +43,8 @@ module.exports = class SteveClient extends Client {
 
         /** @type {Logger} */
         this.logger = new Logger(this);
+
+        this.verifyConfig();
         this.initHandlers();
     }
 
@@ -50,6 +52,14 @@ module.exports = class SteveClient extends Client {
         readdirSync(join(__dirname, "handlers"))
             .filter(file => file.endsWith("handler.js"))
             .forEach(handler => require("./handlers/" + handler)(this));
+    }
+
+    verifyConfig() {
+        // Do some shit here and whatever
+        if (!this.config.log_settings) 
+            this.config.log_settings = { "channel": "", members: [], events: [] }
+        
+        this.overwriteConfig();
     }
 
     get prefix() {
