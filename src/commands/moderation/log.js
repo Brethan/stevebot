@@ -58,7 +58,7 @@ module.exports = class Log extends Command {
 
     async remove_event(logger, message, args) {
 
-    }
+    } 
 
 
 
