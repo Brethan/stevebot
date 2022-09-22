@@ -4,6 +4,10 @@ const { Message, MessageEmbed, GuildMember } = require("discord.js");
 const SteveClient = require("../Client");
 
 
+/**
+ * Design goal for commands: break into functions such that
+ * running a command does not require the execute method to run.
+ */
 module.exports = class Command {
 
     /**

@@ -36,25 +36,32 @@ module.exports = class Log extends Command {
      */
     async execute(message, args) {
         const logger = this.client.logger;
-        const primary = args.shift();
-        switch (primary) {
-            case "add-member":
-                logger.addMembersToLog((await this.filterMemberIds(args, message.guild)));
-                break;
-            case "remove-member":
-                logger.removeMembersFromLog((await this.filterMemberIds(args, message.guild)));
-                break;
-            case "add-event":
-                console.log(require("../../data/events.json"));
-                break;
-            case "remove-event":
-                break;
-            default:
-                break;
-        }
+        const primary = args.shift()?.replace("-", "_") || "";
+        if (this[primary])
+            await this[primary](logger, message, args);
 
         return "a";
     }
+
+    async add_member(logger, message, args) {
+        logger.addMembersToLog((await this.filterMemberIds(args, message.guild)));
+
+    }
+
+    async remove_member(logger, message, args)  {
+        logger.removeMembersFromLog((await this.filterMemberIds(args, message.guild)));
+    }
+
+    async add_event(logger, message, args) {
+
+    }
+
+    async remove_event(logger, message, args) {
+
+    }
+
+
+
 
     /**
      * 
