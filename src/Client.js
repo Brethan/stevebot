@@ -1,6 +1,6 @@
 //@ts-check
 
-const { writeFileSync, readdir, readdirSync } = require("fs");
+const { writeFileSync, readdirSync, existsSync, write } = require("fs");
 const { Client, Collection, Message } = require("discord.js");
 const { join } = require("path");
 const Command = require("./commands/Command");
@@ -14,7 +14,7 @@ module.exports = class SteveClient extends Client {
     constructor(options) {
         super(options);
 
-        this.config = require("../config.json");
+        this.config = this.importConfig();
 
         /**
          * @type {Collection<string, Command>}
@@ -44,8 +44,12 @@ module.exports = class SteveClient extends Client {
         /** @type {Logger} */
         this.logger = new Logger(this);
 
-        this.verifyConfig();
         this.initHandlers();
+
+        if (!existsSync("./.env")) {
+            writeFileSync("./.env", "TOKEN=")
+            throw new Error("You forgot to make your .env file. Made one for you, better put your token there.");
+        }
     }
 
     initHandlers() {
@@ -54,12 +58,15 @@ module.exports = class SteveClient extends Client {
             .forEach(handler => require("./handlers/" + handler)(this));
     }
 
-    verifyConfig() {
+    importConfig() {
         // Do some shit here and whatever
-        if (!this.config.log_settings) 
-            this.config.log_settings = { "channel": "", members: [], events: [] }
-        
-        this.overwriteConfig();
+        if (existsSync("./config.json")) {
+            return require("../config.json");
+        } else {
+            const data = {prefix: "s.", "log_settings": {"channel": "", "members": [], "events": []}}
+            writeFileSync("./config.json", JSON.stringify(data, null, 4));
+            return data;
+        }
     }
 
     get prefix() {
