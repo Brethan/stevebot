@@ -19,6 +19,11 @@ module.exports = class SteveClient extends Client {
 		this.config = this.importConfig();
 
 		/**
+		 * @readonly
+		 */
+		this.eventsJson = require("./data/events.json");
+
+		/**
          * @type {Collection<string, Command>}
          */
 		this.commands = new Collection();
