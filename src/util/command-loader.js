@@ -57,15 +57,14 @@ module.exports = (dir, client) => {
 				if (command.alias) {
 					if (client.aliases.has(command.alias)) {
 						console.log(`WARNING: There is already a command with alias ${command.alias}`);
-					}
-					else {
+					} else {
 						client.aliases.set(command.alias, command);
 					}
 				}
 
 				console.log(`INFO: Command ${command.name} successfully added to the command collection`);
-			}
-			else {console.log(`ERROR: Command ${command.name} not added to the command collection.`);}
+
+			} else {console.log(`WARNING: Command ${command.name} not added to the command collection.`);}
 
 		}
 	});
