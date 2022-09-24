@@ -41,19 +41,23 @@ module.exports = class Log extends Command {
 		const primary = args.shift()?.replace("-", "_") || "";
 		let reply;
 
-		if (this[primary]) {reply = await this[primary](logger, message, args);}
+		if (this[primary]) {
+			reply = await this[primary](logger, message, args);
+		}
 
-		return reply || new discord.EmbedBuilder({ description: "ooog" });
+		return reply || (await this.info(logger, message, primary));
 	}
 
 	/**
 	 *
 	 * @param {Logger} logger
 	 * @param {discord.Message} message
+	 *
+	 * @return {Promise<discord.EmbedBuilder>}
 	 */
-	async info(logger, message) {
+	async info(logger, message, method = "") {
 		const { guild } = message;
-		if (!guild) return;
+		if (!guild) return new discord.EmbedBuilder().setDescription("oogh");
 
 		const channel = await guild.channels.fetch(logger.loggingChannel);
 		const members = [];
@@ -64,9 +68,11 @@ module.exports = class Log extends Command {
 			members.push(`<@${member.id}>`);
 		}
 
+		method = method.replace("_", "-");
 		const embed = new discord.EmbedBuilder()
 			.setTitle("Command Info: Log")
 			.setDescription(`Logging Channel: ${channel}\n\n`
+				+ `${this.expectedArgs.includes(method) ? `**Method**: ${method}\n\n` : ""}`
 				+ `**Members**\n${members.length ? members.join("\n") : "No members being logged"}\n\n`
 				+ `**Events**\n${logger.events.length ? logger.events.join("\n") : "No events being logged"}`)
 			.setColor("Blurple");
@@ -117,8 +123,7 @@ module.exports = class Log extends Command {
 	 * @param {string[]} args
 	 */
 	async add_event(logger, _message, args) {
-		// method stub
-
+		logger.addEventsToLog(this.filterEvents(args));
 	}
 
 	/**
@@ -128,7 +133,16 @@ module.exports = class Log extends Command {
 	 * @param {string[]} args
 	 */
 	async remove_event(logger, _message, args) {
-		// method stub
+		logger.removeEventsFromLog(this.filterEvents(args));
+	}
+
+	/**
+	 *
+	 * @param {string[]} events_raw
+	 * @returns {string[]}
+	 */
+	filterEvents(events_raw) {
+		return events_raw.filter(ev => this.client.eventsJson.includes(ev));
 	}
 
 
