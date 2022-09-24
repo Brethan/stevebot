@@ -3,4 +3,5 @@ node_modules
 config.json
 .vscode
 Test.js
+src/commands/util/Test.js
 *.xlsx
