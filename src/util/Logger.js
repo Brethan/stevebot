@@ -43,6 +43,7 @@ module.exports = class Logger {
 	 *
 	 * @param {string | string[]} toAdd
 	 * @param {"members" | "events"} method
+	 * @private
 	 */
 	addToLog(toAdd, method) {
 		if (typeof toAdd === "string") {
@@ -72,6 +73,7 @@ module.exports = class Logger {
 	 *
 	 * @param {string | string[]} toRemove
 	 * @param {"events" | "members"} method
+	 * @private
 	 */
 	removeFromLog(toRemove, method) {
 		if (typeof toRemove === "string") {
