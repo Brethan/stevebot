@@ -23,6 +23,8 @@ module.exports = class SteveClient extends Client {
 		 */
 		this.eventsJson = require("./data/events.json");
 
+		this.slashJson = require("./data/slashReady.json");
+
 		/**
          * @type {Collection<string, Command>}
          */
@@ -54,7 +56,7 @@ module.exports = class SteveClient extends Client {
 		this.initHandlers();
 
 		if (!existsSync("./.env")) {
-			writeFileSync("./.env", "TOKEN=");
+			writeFileSync("./.env", "TOKEN=\nGUILD=\nCLIENT=");
 			throw new Error("You forgot to make your .env file. Made one for you, better put your token there.");
 		}
 	}
@@ -102,6 +104,12 @@ module.exports = class SteveClient extends Client {
 		} catch (error) {
 			console.log("ERROR: Could not delete a message. It may have been deleted by someone...");
 		}
+	}
+
+	overwriteSlashJson() {
+		console.log("INFO: Overwriting the slashReady json");
+		const data = JSON.stringify(this.slashJson, null, 4);
+		writeFileSync("./src/data/slashReady.json", data);
 	}
 
 	overwriteConfig() {
