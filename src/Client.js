@@ -25,6 +25,10 @@ module.exports = class SteveClient extends Client {
 
 		this.slashJson = require("./data/slashReady.json");
 
+		/** @type {string[]} */
+		// @ts-ignore
+		this.rolesJson = Array.from(require("./data/roles.json"));
+
 		/**
          * @type {Collection<string, Command>}
          */
@@ -112,6 +116,12 @@ module.exports = class SteveClient extends Client {
 		writeFileSync("./src/data/slashReady.json", data);
 	}
 
+	overwriteRoles() {
+		console.log("INFO: Overwriting the roles json");
+		const data = JSON.stringify(this.rolesJson, null, 4);
+		writeFileSync("./src/data/roles.json", data);
+	}
+
 	overwriteConfig() {
 		console.log("INFO: Overwriting the config json");
 		const data = JSON.stringify(this.config, null, 4);
@@ -128,6 +138,6 @@ module.exports = class SteveClient extends Client {
      * @param {string} mention
      */
 	resolveIdFromMention(mention) {
-		return mention.replace(/\\|\/|:|\*|\?|"|<|>|\||@|!/g, "");
+		return mention.replace(/\\|\/|:|\*|\?|"|<|>|\||@|!|&/g, "");
 	}
 };
