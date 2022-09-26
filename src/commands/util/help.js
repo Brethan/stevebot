@@ -17,11 +17,11 @@ module.exports = class Help extends Command {
 	/**
 	 * @param {discord.Message} message
 	 * @param {string[]} args
-	 * @return {string | discord.MessageEmbed}
+	 * @return {Promise<import("discord.js").MessageCreateOptions>}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	async execute(message, args) {
-		return "This command has not been implemented yet!";
+		return { content: "This command has not been implemented yet!" };
 	}
 
 	/**
@@ -30,7 +30,7 @@ module.exports = class Help extends Command {
 	 *
 	 * @param {discord.Message} message
 	 * @param {string} commandName Name of the command to generate usage for
-	 * @return {string | discord.MessageEmbed}
+	 * @return {Promise<import("discord.js").MessageCreateOptions>}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	async defaultHelp(message, commandName) {
@@ -42,10 +42,10 @@ module.exports = class Help extends Command {
 	 * on how to use this command
 	 *
 	 * @param {discord.Message} message
-	 * @return {string | discord.MessageEmbed}
+	 * @return {Promise<import("discord.js").MessageCreateOptions>}
 	 */
 	// eslint-disable-next-line no-unused-vars
-	help(message) {
-		return "The help command has not been implemented yet!";
+	async help(message) {
+		return { content: "The help command has not been implemented yet!" };
 	}
 };
