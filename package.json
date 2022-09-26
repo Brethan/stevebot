@@ -8,7 +8,7 @@
     "dev": "nodemon ."
   },
   "keywords": [],
-  "author": "",
+  "author": "Ethan Bradley",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.4.0",

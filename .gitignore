@@ -5,3 +5,4 @@ config.json
 Test.js
 src/commands/util/Test.js
 *.xlsx
+*button.js
