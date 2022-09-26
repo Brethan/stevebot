@@ -1,7 +1,7 @@
 // @ts-check
 
 // eslint-disable-next-line no-unused-vars
-const { Message, EmbedBuilder, GuildMember, PermissionFlagsBits, PermissionsBitField, MessagePayload } = require("discord.js");
+const { Message, EmbedBuilder, GuildMember, PermissionFlagsBits, PermissionsBitField, MessagePayload, Guild } = require("discord.js");
 // eslint-disable-next-line no-unused-vars
 const SteveClient = require("../Client");
 
@@ -138,6 +138,9 @@ module.exports = class Command {
 		// Args are required and none are provided
 		if (this.args && !args.length) return "You didn't provide any arguments!";
 
+		// Bypass if arg[0] is help
+		else if (args[0] === "help") return "";
+
 		// Minimum # of args are required and N < minArgs, N = args provided
 		else if (this.minArgs > args.length) return "You didn't provide enough arguments!";
 
@@ -214,6 +217,61 @@ module.exports = class Command {
 		setTimeout(() => {
 			this.autoclear = temp;
 		}, 500);
+	}
+
+	/**
+	 *
+	 * @param {string[]} members_raw
+	 * @param {?Guild} guild
+	 * @returns {Promise<string[]>}
+	 */
+	async filterMemberIds(members_raw, guild) {
+		const memberIds = this.resolveBulkSnowflakeIds(members_raw);
+		await guild?.members.fetch();
+
+		return memberIds.filter(id => guild?.members.cache.has(id));
+	}
+
+	/**
+	 *
+	 * @param {string[]} roles_raw
+	 * @param {?Guild} guild
+	 */
+	async filterRoleIds(roles_raw, guild) {
+		const roleIds = this.resolveBulkSnowflakeIds(roles_raw);
+		await guild?.roles.fetch();
+
+		return roleIds.filter(id => guild?.roles.cache.has(id));
+	}
+
+	/**
+	 *
+	 * @param {string[]} snowflakes
+	 * @param {"role" | "mention" | "channel"} type
+	 */
+	snowflakesToMention(snowflakes, type = "role") {
+		const append = ">";
+		const prepend = "<" + (type == "channel" ? "#" : "@") + (type == "role" ? "&" : "");
+		const mentions = [];
+
+		for (const s of snowflakes) {
+			mentions.push(prepend + s + append);
+		}
+
+		return mentions.join(", ");
+	}
+
+	/**
+		 *
+		 * @param {string[]} snowflakes
+		 */
+	resolveBulkSnowflakeIds(snowflakes) {
+		const member = [];
+		for (const id of snowflakes) {
+			member.push(this.client.resolveIdFromMention(id));
+		}
+
+		return member;
 	}
 
 	toString() {

@@ -42,7 +42,7 @@ module.exports = class Log extends Command {
 		let reply;
 
 		if (this[primary]) {
-			reply = await this[primary](logger, message, args);
+			reply = await this[primary](logger, message, args.length ? args : "");
 		}
 
 		return reply || (await this.info(logger, message, primary));
@@ -52,6 +52,7 @@ module.exports = class Log extends Command {
 	 *
 	 * @param {Logger} logger
 	 * @param {discord.Message} message
+	 * @param {string} method
 	 *
 	 * @return {Promise<import('discord.js').MessageCreateOptions>}
 	 */
@@ -144,31 +145,5 @@ module.exports = class Log extends Command {
 		return events_raw.filter(ev => this.client.eventsJson.includes(ev));
 	}
 
-
-	/**
-	 *
-	 * @param {string[]} members_raw
-	 * @param {?discord.Guild} guild
-	 * @returns {Promise<string[]>}
-	 */
-	async filterMemberIds(members_raw, guild) {
-		const memberIds = this.resolveBulkMemberIds(members_raw);
-		await guild?.members.fetch();
-
-		return memberIds.filter(id => guild?.members.cache.has(id));
-	}
-
-	/**
-	 *
-	 * @param {string[]} members_raw
-	 */
-	resolveBulkMemberIds(members_raw) {
-		const member = [];
-		for (const id of members_raw) {
-			member.push(this.client.resolveIdFromMention(id));
-		}
-
-		return member;
-	}
 
 };
