@@ -34,7 +34,7 @@ module.exports = class Log extends Command {
 	/**
 	 * @param {discord.Message} message
 	 * @param {string[]} args
-	 * @return {Promise<string | discord.EmbedBuilder>}
+	 * @return {Promise<import('discord.js').MessageCreateOptions>}
 	 */
 	async execute(message, args) {
 		const logger = this.client.logger;
@@ -53,11 +53,11 @@ module.exports = class Log extends Command {
 	 * @param {Logger} logger
 	 * @param {discord.Message} message
 	 *
-	 * @return {Promise<discord.EmbedBuilder>}
+	 * @return {Promise<import('discord.js').MessageCreateOptions>}
 	 */
 	async info(logger, message, method = "") {
 		const { guild } = message;
-		if (!guild) return new discord.EmbedBuilder().setDescription("oogh");
+		if (!guild) return { embeds: [new discord.EmbedBuilder().setDescription("oogh")] };
 
 		const channel = await guild.channels.fetch(logger.loggingChannel);
 		const members = [];
@@ -83,7 +83,7 @@ module.exports = class Log extends Command {
 
 		this.tempDisableAutoclear();
 
-		return embed;
+		return { embeds: [embed] };
 	}
 
 	/**
@@ -103,7 +103,6 @@ module.exports = class Log extends Command {
 	 */
 	async add_member(logger, message, args) {
 		logger.addMembersToLog((await this.filterMemberIds(args, message.guild)));
-
 	}
 
 	/**
