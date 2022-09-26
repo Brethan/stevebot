@@ -1,7 +1,7 @@
 // @ts-check
 
 // eslint-disable-next-line no-unused-vars
-const { Message, EmbedBuilder, GuildMember, PermissionFlagsBits, PermissionsBitField } = require("discord.js");
+const { Message, EmbedBuilder, GuildMember, PermissionFlagsBits, PermissionsBitField, MessagePayload } = require("discord.js");
 // eslint-disable-next-line no-unused-vars
 const SteveClient = require("../Client");
 
@@ -19,7 +19,9 @@ module.exports = class Command {
 	 * @param {string} options.name
 	 * @param {?string} options.description
 	 * @param {?string} options.alias
+	 * @param {?boolean} options.slashOnly
 	 * @param {?import("discord.js").PermissionResolvable[]} options.permissions
+	 * @param {?boolean} options.slashReady
 	 * @param {?boolean} options.args
 	 * @param {number} options.minArgs
 	 * @param {?string[]} options.expectedArgs
@@ -60,6 +62,12 @@ module.exports = class Command {
 		 * aside from a potential 0 argument use case
 		 */
 		this.minArgs = options.minArgs || 0;
+
+		/** @type {boolean} */
+		this.slashReady = (options.slashReady == null) ? false : options.slashReady;
+
+		/** @type {boolean} */
+		this.slashOnly = (options.slashOnly == null) ? false : options.slashOnly;
 
 		/** @type {string[]} A list of the expected primary arguments. */
 		this.expectedArgs = (options.expectedArgs || []).concat("help");
@@ -105,11 +113,20 @@ module.exports = class Command {
 	 * @param {Message} message
 	 * @param {string[]} args
 	 * @abstract
-	 * @returns {Promise<String | EmbedBuilder>}
+	 * @returns {Promise<import("discord.js").MessageCreateOptions>}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	async execute(message, args) {
 		throw new Error("This command has not been implemented yet because steve is lazy.");
+	}
+
+	/**
+	 *
+	 * @param {import("discord.js").Interaction} _interaction
+	 * @abstract
+	 */
+	async slash(_interaction) {
+		throw new Error("This command is not ready for slash commands!");
 	}
 
 	/**
@@ -159,6 +176,32 @@ module.exports = class Command {
 	}
 
 	/**
+	 *
+	 * @param {GuildMember} member
+	 */
+	async checkValidStaff(member) {
+		// member.fetch();
+		// @ts-ignore
+		const { moderator, admin } = this.client.config;
+
+		if (member.guild.ownerId === member.id) {
+			return "";
+		}
+
+		if (this.owner) {
+			return (member.guild.ownerId !== member.id) ? "the Server Owner" : "";
+
+		} else if (this.admin) {
+			return (!member.roles.cache.has(admin)) ? "an Admin" : "";
+
+		} else if (this.moderator) {
+			return (!member.roles.cache.has(moderator)) ? "a Moderator" : "";
+		}
+
+		return "";
+	}
+
+	/**
 	 * Temporarily disables the commands autoclear timer (command response will not be cleared).
 	 *
 	 * This is useful for a command that would usually want to clear away its response for most
@@ -171,6 +214,10 @@ module.exports = class Command {
 		setTimeout(() => {
 			this.autoclear = temp;
 		}, 500);
+	}
+
+	toString() {
+		return ["\nCommand Name: " + this.name, "\nDescription: " + this.description, "\nAlias: " + (this.alias || "None")].join("; ");
 	}
 
 };

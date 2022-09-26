@@ -4,13 +4,15 @@ const { join, resolve } = require("path");
 const Command = require("../commands/Command.js");
 // eslint-disable-next-line no-unused-vars
 const SteveClient = require("../Client");
+// eslint-disable-next-line no-unused-vars
+const { REST, SlashCommandBuilder, Routes } = require("discord.js");
 
 /**
  *
  * @param {string} dir
  * @param {SteveClient} client
  */
-module.exports = (dir, client) => {
+module.exports = async (dir, client) => {
 
 	/**
 	 *
@@ -68,5 +70,40 @@ module.exports = (dir, client) => {
 
 		}
 	});
-	// console.log(client.commands);
+
+	process.stdout.write("Waiting for client");
+	let counter = 0;
+	while (!client.isReady()) {
+		await client.sleep(25);
+		if ((counter++) % 15 == 0) process.stdout.write(".");
+	}
+
+	const commandArr = Array.from(client.commands.values());
+	const slashArr = [];
+
+	for (const command of commandArr) {
+		if (!command.slashReady) continue;
+
+		const slash = new SlashCommandBuilder()
+			.setName(command.name)
+			.setDescription(command.description)
+			.toJSON();
+
+		slashArr.push(slash);
+
+	}
+	const slashReady = slashArr.map(v => v.name);
+	const difference = slashReady.filter(str => !client.slashJson.includes(str))
+		.concat(client.slashJson.filter(str => !slashReady.includes(str)));
+
+	if (!difference.length) return;
+	client.slashJson = slashReady;
+	client.overwriteSlashJson();
+
+	console.log("NOTICE: Registering the following slash commands:", slashReady);
+
+	const rest = new REST({ version: 10 }).setToken(client.token);
+	rest.put(Routes.applicationGuildCommands(client.user.id, process.env.GUILD), { body: slashArr })
+		.then(data => console.log(`Successfully registered ${data.length} application commands`))
+		.catch(console.error);
 };
