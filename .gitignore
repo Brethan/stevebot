@@ -2,7 +2,7 @@
 node_modules
 config.json
 .vscode
-Test.js
+Test/
 src/commands/util/Test.js
 *.xlsx
 *button.js
