@@ -82,14 +82,11 @@ module.exports = async (dir, client) => {
 	const slashArr = [];
 
 	for (const command of commandArr) {
-		if (!command.slashReady) continue;
+		const slash = command.createSlashCommand(true);
 
-		const slash = new SlashCommandBuilder()
-			.setName(command.name)
-			.setDescription(command.description)
-			.toJSON();
-
-		slashArr.push(slash);
+		if (slash) {
+			slashArr.push(slash.toJSON());
+		}
 
 	}
 	const slashReady = slashArr.map(v => v.name);

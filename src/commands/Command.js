@@ -1,7 +1,7 @@
 // @ts-check
 
 // eslint-disable-next-line no-unused-vars
-const { Message, EmbedBuilder, GuildMember, PermissionFlagsBits, PermissionsBitField, MessagePayload, Guild } = require("discord.js");
+const { Message, EmbedBuilder, GuildMember, PermissionFlagsBits, PermissionsBitField, MessagePayload, Guild, SlashCommandBuilder } = require("discord.js");
 // eslint-disable-next-line no-unused-vars
 const SteveClient = require("../Client");
 
@@ -21,7 +21,6 @@ module.exports = class Command {
 	 * @param {?string} options.alias
 	 * @param {?boolean} options.slashOnly
 	 * @param {?import("discord.js").PermissionResolvable[]} options.permissions
-	 * @param {?boolean} options.slashReady
 	 * @param {?boolean} options.args
 	 * @param {number} options.minArgs
 	 * @param {?string[]} options.expectedArgs
@@ -63,11 +62,10 @@ module.exports = class Command {
 		 */
 		this.minArgs = options.minArgs || 0;
 
-		/** @type {boolean} */
-		this.slashReady = (options.slashReady == null) ? false : options.slashReady;
 
 		/** @type {boolean} */
 		this.slashOnly = (options.slashOnly == null) ? false : options.slashOnly;
+
 
 		/** @type {string[]} A list of the expected primary arguments. */
 		this.expectedArgs = (options.expectedArgs || []).concat("help");
@@ -109,14 +107,29 @@ module.exports = class Command {
 	}
 
 	/**
+	 * Create the slash command interaction for this command
+	 * @param {boolean} external
+	 * @abstract
+	 * @returns {?SlashCommandBuilder}
+	 */
+	createSlashCommand(external) {
+		if (external) {
+			return null;
+		} else {
+			return new SlashCommandBuilder()
+				.setName(this.name)
+				.setDescription(this.description);
+		}
+	}
+
+	/**
 	 *
-	 * @param {Message} message
-	 * @param {string[]} args
+	 * @param {Message} _message
+	 * @param {string[]} _args
 	 * @abstract
 	 * @returns {Promise<import("discord.js").MessageCreateOptions>}
 	 */
-	// eslint-disable-next-line no-unused-vars
-	async execute(message, args) {
+	async execute(_message, _args) {
 		throw new Error("This command has not been implemented yet because steve is lazy.");
 	}
 
@@ -169,12 +182,11 @@ module.exports = class Command {
 
 	/**
 	 *
-	 * @param {string[]} args
+	 * @param {string[]} _args
 	 * @returns {string[]}
 	 * @abstract
 	 */
-	// eslint-disable-next-line no-unused-vars
-	checkVariableArguments(args) {
+	checkVariableArguments(_args) {
 		throw new Error(this.name + " variable argument checking has not been implemented");
 	}
 

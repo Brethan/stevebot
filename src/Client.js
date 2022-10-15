@@ -25,6 +25,8 @@ module.exports = class SteveClient extends Client {
 
 		this.slashJson = require("./data/slashReady.json");
 
+		this.departments = require("./data/departments.json");
+
 		/** @type {string[]} */
 		// @ts-ignore
 		this.rolesJson = Array.from(require("./data/roles.json"));
@@ -138,6 +140,6 @@ module.exports = class SteveClient extends Client {
      * @param {string} mention
      */
 	resolveIdFromMention(mention) {
-		return mention.replace(/\\|\/|:|\*|\?|"|<|>|\||@|!|&/g, "");
+		return mention.replace(/[A-Za-z]|\\|\/|:|\*|\?|"|<|>|\||@|!|&/g, "");
 	}
 };

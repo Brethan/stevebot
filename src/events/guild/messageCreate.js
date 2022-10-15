@@ -23,5 +23,9 @@ module.exports = class MessageCreate extends Event {
 		if (message.author.bot) return;
 		if (message.content.startsWith(client.prefix)) return;
 		console.log(message?.content);
+
+		// if ((message.author.id === message.guild?.ownerId)) {
+		// 	message.reply({ content: `<${message.author.displayAvatarURL()}>` });
+		// }
 	}
 };
