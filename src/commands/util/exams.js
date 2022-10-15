@@ -5,7 +5,7 @@ const { Message, ChatInputCommandInteraction, ButtonBuilder, ButtonStyle, Action
 module.exports = class Exams extends Command {
 	constructor(client) {
 		super(client, {
-			"name": "examss",
+			"name": "exams",
 			"description": "Command for testing out them buttons",
 			"slashOnly": true,
 			"permissions": ["Administrator"],
@@ -27,17 +27,13 @@ module.exports = class Exams extends Command {
 	 * @override
 	 */
 	createSlashCommand(_args0) {
-		/** @type {import('discord.js').APIApplicationCommandOptionChoice[]} */
-		const deptChoices = [];
-		for (const dept of this.client.departments) {
-			deptChoices.push({ name: "dept", value: dept });
-		}
+
 		const slash = super.createSlashCommand(false)
 			.addStringOption(option => {
 				option.setName("department")
 					.setDescription("Department stuff ha ha lol")
+					.setAutocomplete(true)
 					.setRequired(true);
-				option.choices = deptChoices;
 				return option;
 			});
 
@@ -46,10 +42,20 @@ module.exports = class Exams extends Command {
 
 	/**
 	 *
-	 * @param {ChatInputCommandInteraction} interaction
+	 * @param {import('discord.js').Interaction} interaction
 	 */
 	async slash(interaction) {
-		interaction.channel.send("bruh stop");
+		if (interaction.isAutocomplete()) {
+			const deptArr = this.client.departments;
+			const foc = interaction.options.getFocused();
+			try {
+				const filteredDepartments = deptArr.filter(choice => choice.toLowerCase().startsWith(foc));
+				const limitDepartments = filteredDepartments.splice(0, Math.min(25, filteredDepartments.length));
+				await interaction.respond(limitDepartments.map(str => ({ name: str, value: str })))
+			} catch (error) {
+				console.log("ERROR: exams.js::slash(interaction): await interaction.respond() - Unknown (Cancelled?) Interaction!");
+			}
+		}
 	}
 
 };

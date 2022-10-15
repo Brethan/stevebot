@@ -93,7 +93,7 @@ module.exports = async (dir, client) => {
 	const difference = slashReady.filter(str => !client.slashJson.includes(str))
 		.concat(client.slashJson.filter(str => !slashReady.includes(str)));
 
-	if (!difference.length) return;
+	if (!difference.length && client.prefix.startsWith("s.")) return;
 	client.slashJson = slashReady;
 	client.overwriteSlashJson();
 

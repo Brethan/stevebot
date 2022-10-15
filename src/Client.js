@@ -78,18 +78,29 @@ module.exports = class SteveClient extends Client {
 		if (existsSync("./config.json")) {
 			return require("../config.json");
 		} else {
-			const data = { prefix: "s.", "log_settings": { "channel": "", "members": [], "events": [] } };
+			const data = { 
+				prod: "s.",
+				dev: "n.",
+				"log_settings": { 
+					"channel": "", 
+					"members": [],
+					"events": []
+				}
+			};
 			writeFileSync("./config.json", JSON.stringify(data, null, 4));
 			return data;
 		}
 	}
 
 	get prefix() {
-		return this.config.prefix;
+		if (!this.user) return this.config.dev;
+		const username = this.user.username.toLowerCase();
+		return username.startsWith("steve") ? this.config.prod : this.config.dev;
 	}
 
 	set prefix(change) {
-		this.config.prefix = change;
+		this.config.prod = change;
+		this.overwriteConfig();
 	}
 
 	/**

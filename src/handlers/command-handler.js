@@ -106,12 +106,12 @@ module.exports = (client) => {
 	});
 
 	client.on("interactionCreate", async interaction => {
-		if (!interaction.isChatInputCommand()) return;
+		if (interaction.isAutocomplete() || interaction.isChatInputCommand()) {
+			const { commandName } = interaction;
 
-		const { commandName } = interaction;
-
-		const command = client.commands.get(commandName);
-		await command?.slash(interaction);
+			const command = client.commands.get(commandName);
+			await command?.slash(interaction);
+		}
 
 	});
 };
