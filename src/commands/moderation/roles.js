@@ -25,9 +25,9 @@ module.exports = class Roles extends Command {
 	async execute(message, args) {
 		// Things
 		const primary = args.shift();
-		if (this[primary]) {
+		if (this[primary])
 			this[primary]((await this.filterRoleIds(args, message.guild)));
-		}
+
 
 		return { embeds: [this.info()] };
 	}

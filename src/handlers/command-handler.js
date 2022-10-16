@@ -47,9 +47,9 @@ module.exports = (client) => {
 		}
 		// Member sent invalid arguments, an incorrect # of arguments, or both
 		let invalidReason = command.validateCommandInvocation(args);
-		if (invalidReason.length) {
+		if (invalidReason.length)
 			return cancelCommand(invalidReason);
-		}
+
 		// Member does not have permission to use this command
 		const missingPermissions = command.checkPermissions(member, channel.id);
 		if (missingPermissions.length > 0) {
@@ -92,9 +92,9 @@ module.exports = (client) => {
 
 			// Send the response to the member. If autoclear is set, delete the response
 			const response = await message.channel.send(result);
-			if (command.autoclear > 0) {
+			if (command.autoclear > 0)
 				await client.deleteMessage(response, command.autoclear);
-			}
+
 
 			// Delete the command invocation message
 			await message.delete();

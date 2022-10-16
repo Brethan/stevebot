@@ -19,7 +19,7 @@ module.exports = class Prefix extends Command {
 
 	createSlashCommand(_args0) {
 		const slash = super.createSlashCommand(false);
-		
+
 		return slash;
 	}
 
