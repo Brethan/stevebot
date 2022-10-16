@@ -57,16 +57,16 @@ module.exports = async (dir, client) => {
 				client.commands.set(command.name, command);
 
 				if (command.alias) {
-					if (client.aliases.has(command.alias)) {
+					if (client.aliases.has(command.alias))
 						console.log(`WARNING: There is already a command with alias ${command.alias}`);
-					} else {
+					else
 						client.aliases.set(command.alias, command);
-					}
+
 				}
 
 				console.log(`INFO: Command ${command.name} successfully added to the command collection`);
 
-			} else {console.log(`WARNING: Command ${command.name} not added to the command collection.`);}
+			} else { console.log(`WARNING: Command ${command.name} not added to the command collection.`); }
 
 		}
 	});
@@ -84,9 +84,8 @@ module.exports = async (dir, client) => {
 	for (const command of commandArr) {
 		const slash = command.createSlashCommand(true);
 
-		if (slash) {
+		if (slash)
 			slashArr.push(slash.toJSON());
-		}
 
 	}
 	const slashReady = slashArr.map(v => v.name);
