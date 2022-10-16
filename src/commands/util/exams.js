@@ -1,6 +1,6 @@
 const Command = require('../Command.js');
 // eslint-disable-next-line no-unused-vars
-const { Message, ChatInputCommandInteraction, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction } = require('discord.js');
+const { Message, ChatInputCommandInteraction, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction, AutocompleteInteraction } = require('discord.js');
 
 module.exports = class Exams extends Command {
 	constructor(client) {
@@ -45,16 +45,23 @@ module.exports = class Exams extends Command {
 	 * @param {import('discord.js').Interaction} interaction
 	 */
 	async slash(interaction) {
-		if (interaction.isAutocomplete()) {
-			const deptArr = this.client.departments;
-			const foc = interaction.options.getFocused();
-			try {
-				const filteredDepartments = deptArr.filter(choice => choice.toLowerCase().startsWith(foc));
-				const limitDepartments = filteredDepartments.splice(0, Math.min(25, filteredDepartments.length));
-				await interaction.respond(limitDepartments.map(str => ({ name: str, value: str })))
-			} catch (error) {
-				console.log("ERROR: exams.js::slash(interaction): await interaction.respond() - Unknown (Cancelled?) Interaction!");
-			}
+		if (interaction.isAutocomplete())
+			this.handleAutoComplete(interaction);
+	}
+
+	/**
+	 *
+	 * @param {AutocompleteInteraction} interaction
+	 */
+	async handleAutoComplete(interaction) {
+		const deptArr = this.client.departments;
+		const foc = interaction.options.getFocused();
+		try {
+			const filteredDepartments = deptArr.filter(choice => choice.toLowerCase().startsWith(foc));
+			const limitDepartments = filteredDepartments.splice(0, Math.min(25, filteredDepartments.length));
+			await interaction.respond(limitDepartments.map(str => ({ name: str, value: str })));
+		} catch (error) {
+			console.log("ERROR: exams.js::slash(interaction): await interaction.respond() - Unknown (Cancelled?) Interaction!");
 		}
 	}
 

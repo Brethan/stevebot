@@ -78,14 +78,14 @@ module.exports = class SteveClient extends Client {
 		if (existsSync("./config.json")) {
 			return require("../config.json");
 		} else {
-			const data = { 
+			const data = {
 				prod: "s.",
 				dev: "n.",
-				"log_settings": { 
-					"channel": "", 
+				"log_settings": {
+					"channel": "",
 					"members": [],
-					"events": []
-				}
+					"events": [],
+				},
 			};
 			writeFileSync("./config.json", JSON.stringify(data, null, 4));
 			return data;

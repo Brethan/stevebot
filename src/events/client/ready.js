@@ -13,7 +13,7 @@ module.exports = class Ready extends Event {
 	 * @param {SteveClient} client
 	 */
 	async ready(client) {
-		console.log("\nNOTICE:", client.user?.tag, "is ready and waiting");
+		process.stdout.write(`\n\rNOTICE: ${client.user?.tag} is ready and waiting\n`);
 		client.user?.setActivity({
 			name: "stevebotV5 in development :o",
 		});
