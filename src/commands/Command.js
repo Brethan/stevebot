@@ -172,9 +172,9 @@ module.exports = class Command {
 		const missingPermissions = [];
 		for (const perm of this.permissions) {
 			// @ts-ignore
-			if (!(member.permissions.has(perm) || member.permissionsIn(channelId).has(perm))) {
+			if (!(member.permissions.has(perm) || member.permissionsIn(channelId).has(perm)))
 				missingPermissions.push(perm);
-			}
+
 		}
 
 		return missingPermissions;
@@ -199,19 +199,19 @@ module.exports = class Command {
 		// @ts-ignore
 		const { moderator, admin } = this.client.config;
 
-		if (member.guild.ownerId === member.id) {
+		if (member.guild.ownerId === member.id)
 			return "";
-		}
 
-		if (this.owner) {
+
+		if (this.owner)
 			return (member.guild.ownerId !== member.id) ? "the Server Owner" : "";
 
-		} else if (this.admin) {
+		else if (this.admin)
 			return (!member.roles.cache.has(admin)) ? "an Admin" : "";
 
-		} else if (this.moderator) {
+		else if (this.moderator)
 			return (!member.roles.cache.has(moderator)) ? "a Moderator" : "";
-		}
+
 
 		return "";
 	}
@@ -266,9 +266,9 @@ module.exports = class Command {
 		const prepend = "<" + (type == "channel" ? "#" : "@") + (type == "role" ? "&" : "");
 		const mentions = [];
 
-		for (const s of snowflakes) {
+		for (const s of snowflakes)
 			mentions.push(prepend + s + append);
-		}
+
 
 		return mentions.join(", ");
 	}
@@ -279,9 +279,9 @@ module.exports = class Command {
 		 */
 	resolveBulkSnowflakeIds(snowflakes) {
 		const member = [];
-		for (const id of snowflakes) {
+		for (const id of snowflakes)
 			member.push(this.client.resolveIdFromMention(id));
-		}
+
 
 		return member;
 	}

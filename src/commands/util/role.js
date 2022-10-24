@@ -23,9 +23,9 @@ module.exports = class Role extends Command {
 	// eslint-disable-next-line no-unused-vars
 	async execute(message, args) {
 		let reply = { content: "gamer" };
-		if (args[0].match(/add|remove/)) {
+		if (args[0].match(/add|remove/))
 			reply = await this.common(args[1], message.guild.roles.cache, message.member, args[0]);
-		}
+
 
 		return reply;
 	}

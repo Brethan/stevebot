@@ -46,9 +46,9 @@ module.exports = class Logger {
 	 * @private
 	 */
 	addToLog(toAdd, method) {
-		if (typeof toAdd === "string") {
+		if (typeof toAdd === "string")
 			toAdd = [toAdd];
-		}
+
 
 		this[method] = Array.from(new Set([...this[method]].concat(toAdd)));
 	}
@@ -76,9 +76,9 @@ module.exports = class Logger {
 	 * @private
 	 */
 	removeFromLog(toRemove, method) {
-		if (typeof toRemove === "string") {
+		if (typeof toRemove === "string")
 			toRemove = [toRemove];
-		}
+
 
 		this[method] = this[method].filter(str => !toRemove.includes(str));
 	}

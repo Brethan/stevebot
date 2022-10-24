@@ -41,9 +41,9 @@ module.exports = class Log extends Command {
 		const primary = args.shift()?.replace("-", "_") || "";
 		let reply;
 
-		if (this[primary]) {
+		if (this[primary])
 			reply = await this[primary](logger, message, args.length ? args : "");
-		}
+
 
 		return reply || (await this.info(logger, message, primary));
 	}
@@ -78,9 +78,9 @@ module.exports = class Log extends Command {
 				+ `**Events**\n${logger.events.length ? logger.events.join("\n") : "No events being logged"}`)
 			.setColor("Blurple");
 
-		if (this.client.user) {
+		if (this.client.user)
 			embed.setThumbnail(this.client.user.displayAvatarURL());
-		}
+
 
 		this.tempDisableAutoclear();
 

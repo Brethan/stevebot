@@ -1,6 +1,4 @@
 // @ts-check
-// eslint-disable-next-line no-unused-vars
-const SteveClient = require("../Client");
 
 module.exports = class Event {
 
