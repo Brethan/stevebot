@@ -17,10 +17,10 @@ module.exports = (client) => {
 	client.on("messageCreate", async message => {
 		// Guard clauses
 		if (!message || !message.content) return;
-		if (!message.content.toLowerCase().startsWith(client.config.prefix)) return;
+		if (!message.content.toLowerCase().startsWith(client.prefix)) return;
 
 		// Split the message content -> "s.", ["cmdName", "arg_0", "arg_1", ..., "arg_n"]
-		const args = message.content.slice(client.config.prefix.length).trim().split(/ +/);
+		const args = message.content.slice(client.prefix.length).trim().split(/ +/);
 		const commandName = args.shift();
 		if (!commandName) return;
 
