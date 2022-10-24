@@ -27,6 +27,9 @@ module.exports = class SteveClient extends Client {
 
 		this.departments = require("./data/departments.json");
 
+		/** @type {any} */
+		this.courses = require("./data/courses.json");
+
 		/** @type {string[]} */
 		// @ts-ignore
 		this.rolesJson = Array.from(require("./data/roles.json"));
@@ -123,22 +126,33 @@ module.exports = class SteveClient extends Client {
 		}
 	}
 
+	overwriteCourses() {
+		console.log("INFO: Overwriting the courses json");
+		this.overwriteData(this.courses, "./src/data/courses.json");
+	}
+
 	overwriteSlashJson() {
 		console.log("INFO: Overwriting the slashReady json");
-		const data = JSON.stringify(this.slashJson, null, 4);
-		writeFileSync("./src/data/slashReady.json", data);
+		this.overwriteData(this.slashJson, "./src/data/slashReady.json");
 	}
 
 	overwriteRoles() {
 		console.log("INFO: Overwriting the roles json");
-		const data = JSON.stringify(this.rolesJson, null, 4);
-		writeFileSync("./src/data/roles.json", data);
+		this.overwriteData(this.rolesJson, "./src/data/roles.json");
 	}
 
 	overwriteConfig() {
 		console.log("INFO: Overwriting the config json");
-		const data = JSON.stringify(this.config, null, 4);
-		writeFileSync("./config.json", data);
+		this.overwriteData(this.config, "./config.json");
+	}
+
+	/**
+	 * @param {any} obj
+	 * @param {import("fs").PathOrFileDescriptor} path
+	 */
+	overwriteData(obj, path) {
+		const data = JSON.stringify(obj, null, 4);
+		writeFileSync(path, data);
 	}
 
 	externalOverrideConfig(config) {
