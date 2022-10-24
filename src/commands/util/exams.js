@@ -1,6 +1,6 @@
 const Command = require('../Command.js');
 // eslint-disable-next-line no-unused-vars
-const { Message, ChatInputCommandInteraction, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction, AutocompleteInteraction } = require('discord.js');
+const { AutocompleteInteraction } = require('discord.js');
 
 module.exports = class Exams extends Command {
 	constructor(client) {
@@ -35,6 +35,12 @@ module.exports = class Exams extends Command {
 					.setAutocomplete(true)
 					.setRequired(true);
 				return option;
+			}).addStringOption(option => {
+				option.setName("course_code")
+					.setDescription("Course number stuff ha ha lol")
+					.setAutocomplete(true)
+					.setRequired(true);
+				return option;
 			});
 
 		return slash;
@@ -45,24 +51,42 @@ module.exports = class Exams extends Command {
 	 * @param {import('discord.js').Interaction} interaction
 	 */
 	async slash(interaction) {
-		if (interaction.isAutocomplete())
-			this.handleAutoComplete(interaction);
+		try {
+			if (interaction.isAutocomplete())
+				await this.handleAutoComplete(interaction);
+			else if (interaction.isChatInputCommand())
+				await this.handleChatInputCommand();
+		} catch (error) {
+			console.log(error);
+		}
+
+
 	}
 
 	/**
-	 *
+	 * TODO: Refactor this into a module to be used for course info and related items.
 	 * @param {AutocompleteInteraction} interaction
 	 */
 	async handleAutoComplete(interaction) {
-		const deptArr = this.client.departments;
-		const foc = interaction.options.getFocused();
-		try {
-			const filteredDepartments = deptArr.filter(choice => choice.toLowerCase().startsWith(foc));
-			const limitDepartments = filteredDepartments.splice(0, Math.min(25, filteredDepartments.length));
-			await interaction.respond(limitDepartments.map(str => ({ name: str, value: str })));
-		} catch (error) {
-			console.log("ERROR: exams.js::slash(interaction): await interaction.respond() - Unknown (Cancelled?) Interaction!");
+		const deptArr = Object.keys(this.client.courses);
+		const foc = interaction.options.getFocused(true);
+
+		const respond = async (/** @type {string[]} */ arr) => {
+			const filtered = arr.filter(choice => choice.toLowerCase().startsWith(foc.value));
+			const limited = filtered.splice(0, Math.min(25, filtered.length));
+			await interaction.respond(limited.map(str => ({ name: str, value: str })));
+		};
+
+		if (foc.name === "department") {
+			respond(deptArr);
+		} else if (foc.name === "course_code") {
+			const deptVal = interaction.options.getString("department", true);
+			if (!this.client.courses[deptVal])
+				return;
+
+			respond(this.client.courses[deptVal]);
 		}
+
 	}
 
 };
