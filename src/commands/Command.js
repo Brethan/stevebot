@@ -1,7 +1,8 @@
 // @ts-check
 
 // eslint-disable-next-line no-unused-vars
-const { Message, EmbedBuilder, GuildMember, PermissionFlagsBits, PermissionsBitField, MessagePayload, Guild, SlashCommandBuilder } = require("discord.js");
+const { Message, GuildMember, PermissionsBitField, Guild, ApplicationCommandOptionBase, SlashCommandStringOption,
+	SlashCommandSubcommandBuilder, SlashCommandBuilder, ApplicationCommandOptionType } = require("discord.js");
 // eslint-disable-next-line no-unused-vars
 const SteveClient = require("../Client");
 
@@ -120,6 +121,37 @@ module.exports = class Command {
 				.setName(this.name)
 				.setDescription(this.description);
 		}
+	}
+
+	createCmdStringOption(name, description, auto = true, required = true) {
+		return new SlashCommandStringOption()
+			.setName(name)
+			.setDescription(description || name)
+			.setAutocomplete(auto)
+			.setRequired(required);
+	}
+
+	/**
+	 *
+	 * @param {string} name Name of the subcommand
+	 * @param {string} description Explains what  the subcommand does
+	 * @param  {...ApplicationCommandOptionBase} options Options to attach to the subcommand
+	 */
+	createSubCommand(name, description, ...options) {
+		//
+		const sub = new SlashCommandSubcommandBuilder()
+			.setName(name)
+			.setDescription(description || name);
+		for (const option of options) {
+			const i = Object.values(ApplicationCommandOptionType).indexOf(option.type);
+			const optionType = Object.keys(ApplicationCommandOptionType)[i];
+			if (!optionType) continue;
+
+			const method = `add${optionType}${optionType.includes("Subcommand") ? "" : "Option"}`;
+			sub[method](option);
+		}
+
+		return sub;
 	}
 
 	/**
