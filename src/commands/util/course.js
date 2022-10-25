@@ -1,4 +1,5 @@
 const Command = require('../Command.js');
+const { writeFile, write, existsSync, mkdirSync, appendFile } = require("fs");
 // eslint-disable-next-line no-unused-vars
 const { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBooleanOption, EmbedBuilder } = require('discord.js');
 const courseInfo = require('../../util/course-info.js');
@@ -57,7 +58,15 @@ module.exports = class Course extends Command {
 			else if (interaction.isChatInputCommand())
 				await this.handleChatInputCommand(interaction);
 		} catch (error) {
-			console.log(error);
+			const d = new Date();
+			const temp = d.toISOString();
+			const date = temp.substring(0, temp.indexOf("T"));
+			if (!existsSync("./logs/errors"))
+				mkdirSync("./logs/errors", { recursive: true });
+
+			appendFile(`./logs/errors/${date}.log`, String(error) + "\n\n", (err) => {
+				if (err) console.error(err);
+			});
 		}
 
 
@@ -81,7 +90,7 @@ module.exports = class Course extends Command {
 	 */
 	examInfo(dept, code, section) {
 		/** @type {examObj} */
-		const exam = this.client.exams[dept][code][section];
+		const exam = this.client.exams[dept]?.[code]?.[section];
 		return new EmbedBuilder()
 			.setTitle(`Exam Schedule`)
 			.setDescription(`Exam details for **${dept} ${code} - ${section}**`)
@@ -103,8 +112,8 @@ module.exports = class Course extends Command {
 	 */
 	async handleChatInputCommand(interaction) {
 		const sub = interaction.options.getSubcommand();
-		const dept = interaction.options.getString(this.stringOptions[0], true);
-		const code = interaction.options.getString(this.stringOptions[1], true);
+		const dept = interaction.options.getString(this.stringOptions[0], true).toUpperCase();
+		const code = interaction.options.getString(this.stringOptions[1], true).toUpperCase();
 		const visible = interaction.options.getBoolean("visible", false);
 
 		if (interaction.replied)
@@ -114,7 +123,7 @@ module.exports = class Course extends Command {
 			// eslint-disable-next-line curly
 			await interaction.reply({ embeds: [await courseInfo(dept, code)], ephemeral: !visible });
 		else if (sub === this.subcommands[1]) {
-			const section = interaction.options.getString(this.stringOptions[2], true);
+			const section = interaction.options.getString(this.stringOptions[2], true).toUpperCase();
 			await interaction.reply({ embeds: [this.examInfo(dept, code, section)], ephemeral: !visible });
 		}
 
@@ -141,18 +150,16 @@ module.exports = class Course extends Command {
 		if (foc.name === this.stringOptions[0]) {
 			await respond(deptArr);
 		} else if (foc.name === this.stringOptions[1]) {
-			const deptVal = interaction.options.getString(this.stringOptions[0], true);
+			const deptVal = interaction.options.getString(this.stringOptions[0], true).toUpperCase();
 			const codeArr = (sub === this.subcommands[0]) ? this.client.courses[deptVal] : Object.keys(this.client.exams[deptVal]);
 			if (!codeArr)
 				return;
 
 			await respond(codeArr);
 		} else if (foc.name === this.stringOptions[2]) {
-			const deptVal = interaction.options.getString(this.stringOptions[0], true);
-			const codeVal = interaction.options.getString(this.stringOptions[1], true);
-			if (!deptVal || !codeVal)
-				console.log(deptVal, codeVal);
-			const sectionArr = this.client.exams[deptVal][codeVal].sections;
+			const deptVal = interaction.options.getString(this.stringOptions[0], true).toUpperCase();
+			const codeVal = interaction.options.getString(this.stringOptions[1], true).toUpperCase();
+			const sectionArr = this.client.exams[deptVal]?.[codeVal].sections;
 			if (!sectionArr)
 				return;
 
