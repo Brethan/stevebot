@@ -138,7 +138,19 @@ module.exports = class Command {
 	 * @param  {...ApplicationCommandOptionBase} options Options to attach to the subcommand
 	 */
 	createSubCommand(name, description, ...options) {
-		//
+		/** @type {number[]} */
+		const notRequiredPtr = [];
+		// Find all indexes of non-required command options
+		for (const option of options)
+			if (!option.required) notRequiredPtr.push(options.indexOf(option));
+
+		const notRequired = [];
+		// Pull non-required command options out of array
+		for (const ptr of notRequiredPtr)
+			notRequired.push(...options.splice(ptr, 1));
+
+		// Append non-required command options to the back of the array
+		options = options.concat(notRequired);
 		const sub = new SlashCommandSubcommandBuilder()
 			.setName(name)
 			.setDescription(description || name);
