@@ -6,3 +6,4 @@ Test/
 src/commands/util/Test.js
 *.xlsx
 *button.js
+logs/
