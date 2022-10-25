@@ -92,7 +92,7 @@ module.exports = class Course extends Command {
 			const limited = filtered.splice(0, Math.min(25, filtered.length));
 			await interaction.respond(limited.map(str => ({ name: str, value: str })));
 		};
-		
+
 		if (foc.name === "department") {
 			respond(deptArr);
 		} else if (foc.name === "course_code") {

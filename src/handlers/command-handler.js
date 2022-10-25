@@ -108,9 +108,13 @@ module.exports = (client) => {
 	client.on("interactionCreate", async interaction => {
 		if (interaction.isAutocomplete() || interaction.isChatInputCommand()) {
 			const { commandName } = interaction;
-
 			const command = client.commands.get(commandName);
-			await command?.slash(interaction);
+
+			try {
+				await command?.slash(interaction);
+			} catch (error) {
+				console.log("ERROR:", command?.name, " command is not ready for slash commands!");
+			}
 		}
 
 	});
