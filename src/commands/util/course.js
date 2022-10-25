@@ -150,6 +150,8 @@ module.exports = class Course extends Command {
 		} else if (foc.name === this.stringOptions[2]) {
 			const deptVal = interaction.options.getString(this.stringOptions[0], true);
 			const codeVal = interaction.options.getString(this.stringOptions[1], true);
+			if (!deptVal || !codeVal)
+				console.log(deptVal, codeVal);
 			const sectionArr = this.client.exams[deptVal][codeVal].sections;
 			if (!sectionArr)
 				return;

@@ -111,6 +111,7 @@ module.exports = (client) => {
 			const command = client.commands.get(commandName);
 
 			try {
+				console.log(interaction.options);
 				await command?.slash(interaction);
 			} catch (error) {
 				console.log("ERROR:", command?.name, " command is not ready for slash commands!");
