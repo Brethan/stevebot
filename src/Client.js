@@ -30,6 +30,11 @@ module.exports = class SteveClient extends Client {
 		/** @type {any} */
 		this.courses = require("./data/courses.json");
 
+		/**
+		 * @readonly
+		 */
+		this.exams = require("./data/exams.json");
+
 		/** @type {string[]} */
 		// @ts-ignore
 		this.rolesJson = Array.from(require("./data/roles.json"));
