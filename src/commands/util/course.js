@@ -1,5 +1,5 @@
 const Command = require('../Command.js');
-const { writeFile, write, existsSync, mkdirSync, appendFile } = require("fs");
+const { existsSync, mkdirSync, appendFile } = require("fs");
 // eslint-disable-next-line no-unused-vars
 const { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBooleanOption, EmbedBuilder } = require('discord.js');
 const courseInfo = require('../../util/course-info.js');
